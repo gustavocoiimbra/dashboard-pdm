@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #+++++++++++++++++++++++++++++++++++++++
 # Dockerfile for webdevops/base:alpine
 #    -- automatically generated  --
@@ -28,3 +29,27 @@ RUN set -x \
 
 ENTRYPOINT ["/entrypoint"]
 CMD ["supervisord"]
+=======
+# Base image
+FROM python:3.9-slim
+
+# Working directory
+WORKDIR /app
+
+# Copy dependencies file
+COPY requirements.txt requirements.txt
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
+COPY . .
+
+# Expose the Streamlit port
+EXPOSE 8080
+
+# Command to run the application
+CMD ["streamlit", "run", "app.py", "--server.port=8080", "--server.enableCORS=false"]
+
+
+>>>>>>> 7086ca463f5a92e7f797110250228d20ca6fee20
