@@ -1,19 +1,30 @@
-# Base image com Python
-FROM python:3.9-slim
+#+++++++++++++++++++++++++++++++++++++++
+# Dockerfile for webdevops/base:alpine
+#    -- automatically generated  --
+#+++++++++++++++++++++++++++++++++++++++
 
-# Definir diretório de trabalho
-WORKDIR /app
+FROM webdevops/bootstrap:alpine
 
-# Copiar arquivos do projeto para o contêiner
-COPY requirements.txt requirements.txt
-COPY . .
+ENV DOCKER_CONF_HOME=/opt/docker/ \
+    LOG_STDOUT="" \
+    LOG_STDERR=""
 
-# Instalar dependências
-RUN pip install --no-cache-dir -r requirements.txt
+COPY conf/ /opt/docker/
 
-# Expor a porta usada pelo Streamlit
-EXPOSE 8080
+RUN set -x \
+    # Install services
+    && chmod +x /opt/docker/bin/* \
+    && apk-install \
+        supervisor \
+        wget \
+        curl \
+        vim \
+        sed \
+        tzdata \
+        busybox-suid \
+    && chmod +s /sbin/gosu \
+    && docker-run-bootstrap \
+    && docker-image-cleanup
 
-# Comando para iniciar o Streamlit
-CMD ["streamlit", "run", "app.py", "--server.port=8080", "--server.enableCORS=false"]
-
+ENTRYPOINT ["/entrypoint"]
+CMD ["supervisord"]
